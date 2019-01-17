@@ -68,7 +68,7 @@ def check_over(t, dict):
         e = time.time()
     return False
 
-class PosGetter:
+class PosConverter:
     def SetBasePos(self, leftTop, rightBottom):
         self.leftTop = leftTop
         self.rightBottom = rightBottom
@@ -86,7 +86,7 @@ def FindOnScreen(img):
     imsrc = ac.imread("img/screen.png")
     pos = ac.find_template(imsrc, imobj)
     if pos:
-        if (pos['confidence'] > 0.8):
+        if (pos['confidence'] > 0.7):
             return pos['result']
 
 if __name__ == '__main__':
