@@ -1,8 +1,16 @@
 import json
 from basic_op import *
 from Init import *
+import argparse
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='FGO_Assistant')
+    parser.add_argument('--policy',
+                        default="policy/battle_policy.json",
+                        help='Path to a policy file')
+
+    args = parser.parse_args()
+
     pos_dict = Init()
     pg.FAILSAGE = False
     start = input("输入1后开始，否则退出")
@@ -12,7 +20,7 @@ if __name__ == '__main__':
             print("{} s".format(i))
             time.sleep(1)
         print("开始执行")
-
+        policy = json.load(open(args.policy, 'r', encoding='utf-8'))
         # 读json配置文件
         # pos_dict = json.load(open("points.json", 'r', encoding='utf-8'))
         # leftTop = pos_dict['left_top']
@@ -60,12 +68,19 @@ if __name__ == '__main__':
             find = 0
             freshTimes = 0
             while find == 0:
-                lizhuang_pos = FindOnScreen('img/targetClothes.png')
-                if lizhuang_pos:
-                    click_wait([lizhuang_pos[0], lizhuang_pos[1]], 2)
-                    find = 1
-                    break
-
+                task_pos = None
+                if policy['task_type'] == 'cloth':
+                    task_pos = FindOnScreen('img/targetClothes.png')
+                    if task_pos:
+                        click_wait([task_pos[0], task_pos[1]], 2)
+                        find = 1
+                        break
+                else:
+                    task_pos = FindOnScreen('img/targetServant.png')
+                    if task_pos:
+                        click_wait([task_pos[0], task_pos[1]], 2)
+                        find = 1
+                        break
                 if find == 0:
                     click_wait(pos_dict['update_list'], 1)
                     click_wait(pos_dict['update_yes'], 10)
@@ -99,31 +114,48 @@ if __name__ == '__main__':
                 # 不同回合的技能开启
                 # TODO:用配置文件控制
                 print("回合{}:释放技能".format(turn))
-                if turn == 1:
-                    click_wait(pos_dict["skill3_1"], 3)
-                if turn == 3:
-                    click_wait(pos_dict["skill2_2"], 3)
-                    click_wait(pos_dict["skill2_3"], 3)
-                if turn == 4:
-                    click_wait(pos_dict["skill1_1"], 3)
-                    click_wait(pos_dict['open_master_skill'], 0.5)
-                    click_wait(pos_dict['mskill1'], 0.5)
-                    click_wait(pos_dict['mskill1'], 0.5)
-                    click_wait(pos_dict['skill_left_servant'], 3)
-                    click_wait(pos_dict["skill3_2"], 3)
+                t_str = "turn_" + str(turn)
+                turn_policy = policy['policy']
+                if t_str in turn_policy:
+                    if "skill_list" in turn_policy[t_str]:
+                        skill_lists = turn_policy[t_str]['skill_list']
+                        for skill in skill_lists:
+                            if skill.startswith('skill'):
+                                click_wait(pos_dict[skill], 3)
+                            else:
+                                click_wait(pos_dict[skill], 0.5)
+
+                #
+                # if turn == 1:
+                #     click_wait(pos_dict["skill3_1"], 3)
+                # if turn == 3:
+                #     click_wait(pos_dict["skill2_2"], 3)
+                #     click_wait(pos_dict["skill2_3"], 3)
+                # if turn == 4:
+                #     click_wait(pos_dict["skill1_1"], 3)
+                #     click_wait(pos_dict['open_master_skill'], 0.5)
+                #     click_wait(pos_dict['mskill2'], 0.5)
+                #     click_wait(pos_dict['skill_left_servant'], 3)
+                #     click_wait(pos_dict["skill3_2"], 3)
 
                 click_wait(atk_btn, 2.5)
                 # 释放宝具
                 # TODO：配置文件
+                if t_str in turn_policy:
+                    if "weapon" in turn_policy[t_str]:
+                        weapon_list = turn_policy[t_str]['weapon']
+                        for weapon in weapon_list:
+                            weapon_pos = "baoju" + str(weapon)
+                            click_wait(pos_dict[weapon_pos], 0.3)
 
-                if turn == 3:
-                    click_wait(pos_dict['baoju2'], 0.3)
-                elif turn == 4:
-                    click_wait(pos_dict['baoju1'], 0.3)
-                elif turn > 4:
-                    click_wait(pos_dict['baoju1'], 0.3)
-                    click_wait(pos_dict['baoju2'], 0.3)
-                    click_wait(pos_dict['baoju3'], 0.3)
+                # if turn == 3:
+                #     click_wait(pos_dict['baoju2'], 0.3)
+                # elif turn == 4:
+                #     click_wait(pos_dict['baoju1'], 0.3)
+                # elif turn > 4:
+                #     click_wait(pos_dict['baoju1'], 0.3)
+                #     click_wait(pos_dict['baoju2'], 0.3)
+                #     click_wait(pos_dict['baoju3'], 0.3)
 
                 # 扫描卡牌，计算各色数量
                 # TODO：有空这块逻辑可以好好优化改进一下，为了跑通暂时五张卡从左到右出

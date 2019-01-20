@@ -20,7 +20,7 @@ if __name__ == '__main__':
                 click_wait(points_dict['call_ten'],0.5)
                 times += 1
                 if times > 108:
-                    break;
+                    break
             click_wait(points_dict['back_call'],1)
             click_wait([1644,1011],8)
             click_wait([1271,1025],1)

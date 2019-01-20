@@ -79,14 +79,14 @@ class PosConverter:
           dst[i] = self.leftTop[i] + (self.rightBottom[i] - self.leftTop[i]) * src[i]
       return dst
 
-def FindOnScreen(img):
+def FindOnScreen(img, th=0.7):
     imobj = ac.imread(img)
-    screen = pg.screenshot();
+    screen = pg.screenshot()
     screen.save("img/screen.png")
     imsrc = ac.imread("img/screen.png")
     pos = ac.find_template(imsrc, imobj)
     if pos:
-        if (pos['confidence'] > 0.7):
+        if (pos['confidence'] > th):
             return pos['result']
 
 if __name__ == '__main__':
