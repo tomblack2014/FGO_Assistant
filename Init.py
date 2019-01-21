@@ -12,18 +12,17 @@ def Init():
     converter.SetBasePos(leftTop, rightBottom)
 
     for key in points_dict:
-        if len(points_dict[key]) > 2:
+        if type(points_dict[key][0]).__name__ != "float":
             for i in range(0, len(points_dict[key])):
                 points_dict[key][i] = converter.GetPos(points_dict[key][i])
         else:
             points_dict[key] = converter.GetPos(points_dict[key])
-
-    zhijie1 = points_dict['class_choose1']
-    zhijie9 = points_dict['class_choose9']
-    dist = (zhijie9[0] - zhijie1[0]) / 8
-    zhijie = [[zhijie1[0] + dist * i, zhijie1[1]] for i in range(0, 9)]
+    class1 = points_dict['class_choose1']
+    class9 = points_dict['class_choose9']
+    dist = (class9[0] - class1[0]) / 8
+    classes = [[class1[0] + dist * i, class1[1]] for i in range(0, 9)]
     points_dict.pop('class_choose1')
     points_dict.pop('class_choose9')
-    points_dict['class_choose'] = zhijie
+    points_dict['class_choose'] = classes
 
     return points_dict

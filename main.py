@@ -21,18 +21,6 @@ if __name__ == '__main__':
             time.sleep(1)
         print("开始执行")
         policy = json.load(open(args.policy, 'r', encoding='utf-8'))
-        # 读json配置文件
-        # pos_dict = json.load(open("points.json", 'r', encoding='utf-8'))
-        # leftTop = pos_dict['left_top']
-        # rightBottom = pos_dict['right_bottom']
-        # getter = PosGetter()
-        # getter.SetBasePos(leftTop, rightBottom)
-        # zhijie1 = getter.GetPos(points_dict['zhijie1'])
-        # zhijie9 = getter.GetPos(points_dict['zhijie9'])
-        # dist = (zhijie9[0] - zhijie1[0]) / 8
-        # zhijie = [[zhijie1[0] + dist * i, zhijie1[1]] for i in range(0, 9)]
-        # atk_pos = getter.GetPos(points_dict['atk_pos'])
-        # atk_color = getter.GetPos(points_dict['atk_color'])
         PassTimes = 0
 
         # 主循环
@@ -104,6 +92,7 @@ if __name__ == '__main__':
                         break
                     result = FindOnScreen('img/result.png')
                     if result:
+                        print("result")
                         over = 1
                         break
                     time.sleep(1)
@@ -120,23 +109,14 @@ if __name__ == '__main__':
                     if "skill_list" in turn_policy[t_str]:
                         skill_lists = turn_policy[t_str]['skill_list']
                         for skill in skill_lists:
-                            if skill.startswith('skill'):
-                                click_wait(pos_dict[skill], 3)
+                            if skill.startswith('wait'):
+                                time.sleep(5)
                             else:
-                                click_wait(pos_dict[skill], 0.5)
-
-                #
-                # if turn == 1:
-                #     click_wait(pos_dict["skill3_1"], 3)
-                # if turn == 3:
-                #     click_wait(pos_dict["skill2_2"], 3)
-                #     click_wait(pos_dict["skill2_3"], 3)
-                # if turn == 4:
-                #     click_wait(pos_dict["skill1_1"], 3)
-                #     click_wait(pos_dict['open_master_skill'], 0.5)
-                #     click_wait(pos_dict['mskill2'], 0.5)
-                #     click_wait(pos_dict['skill_left_servant'], 3)
-                #     click_wait(pos_dict["skill3_2"], 3)
+                                if skill.startswith('skill'):
+                                    click_wait(pos_dict[skill], 3)
+                                else:
+                                    click_wait(pos_dict[skill], 0.5)
+                            
 
                 click_wait(atk_btn, 2.5)
                 # 释放宝具
@@ -148,24 +128,15 @@ if __name__ == '__main__':
                             weapon_pos = "baoju" + str(weapon)
                             click_wait(pos_dict[weapon_pos], 0.3)
 
-                # if turn == 3:
-                #     click_wait(pos_dict['baoju2'], 0.3)
-                # elif turn == 4:
-                #     click_wait(pos_dict['baoju1'], 0.3)
-                # elif turn > 4:
-                #     click_wait(pos_dict['baoju1'], 0.3)
-                #     click_wait(pos_dict['baoju2'], 0.3)
-                #     click_wait(pos_dict['baoju3'], 0.3)
-
                 # 扫描卡牌，计算各色数量
                 # TODO：有空这块逻辑可以好好优化改进一下，为了跑通暂时五张卡从左到右出
                 for i in range(0, 5):
                     click_wait(pos_dict['ordercards_center'][i], 0.3)
                 time.sleep(15)
-        # 结束结算页面
-        PassTimes += 1
-        print("通关,当前第{}次".format(PassTimes))
-        click_wait(pos_dict['class_choose'][0], 2)
-        click_wait(pos_dict['class_choose'][0], 2)
-        click_wait(pos_dict['class_choose'][0], 2)
-        click_wait(pos_dict['next_btn'], 1)
+            # 结束结算页面
+            PassTimes += 1
+            print("通关,当前第{}次".format(PassTimes))
+            click_wait(pos_dict['class_choose'][0], 2)
+            click_wait(pos_dict['class_choose'][0], 2)
+            click_wait(pos_dict['class_choose'][0], 2)
+            click_wait(pos_dict['next_btn'], 1)
