@@ -32,7 +32,7 @@ if __name__ == '__main__':
                 if start_pos:
                     break
                 # 判断是否卡在上一场战斗结束添加好友界面
-                noadd = pg.locateOnScreen('img/noadd.png')
+                noadd = FindOnScreen('img/noadd.png')
                 if noadd:
                     click_wait(noadd, 1)
                 time.sleep(1)
@@ -64,7 +64,7 @@ if __name__ == '__main__':
                 for i in range(0,4):
                     click_wait(trackbar_pos[i], 1)
                     if policy['task_type'] == 'cloth':
-                        task_pos = FindOnScreen('img/targetClothes.png')
+                        task_pos = FindOnScreen('img/targetClothes.png', 0.9)
                         if task_pos:
                             click_wait([task_pos[0], task_pos[1]], 2)
                             find = 1
@@ -140,8 +140,22 @@ if __name__ == '__main__':
 
                 # 扫描卡牌，计算各色数量
                 # TODO：有空这块逻辑可以好好优化改进一下，为了跑通暂时五张卡从左到右出
+                # for i in range(0, 5):
+                #     click_wait(pos_dict['ordercards_center'][i], 0.3)
+                cards, coler_num = get_cards(pos_dict)
+                click_num = []
+                print("选择指令卡")
+                # 优先垫红卡，之后顺序选
                 for i in range(0, 5):
-                    click_wait(pos_dict['ordercards_center'][i], 0.3)
+                    if cards[i].color == 0:
+                        click_num.append(i)
+                for i in range(0, 5):
+                    if cards[i].color != 0:
+                        click_num.append(i)
+                # 点击指令卡，等动画
+                for i in click_num[: 5]:
+                    click_wait(cards[i].pos, 0.3)
+                cards.clear()
                 time.sleep(15)
             # 结束结算页面
             PassTimes += 1

@@ -3,6 +3,9 @@ import time
 import cv2
 import aircv as ac
 
+buster_color = [247, 0, 0]
+arts_color = [8, 99, 254]
+quick_color = [249, 255, 166]
 
 def click_wait(pos, t):
     """点击某一位置并等待t秒"""
@@ -29,34 +32,6 @@ def find_color(region, color, sim=0):
             if dist <= sim:
                 return [i, j]
     return None
-
-class Card:
-    def __init__(self, name, color, pos):
-        self.name = name
-        self.color = color
-        self.pos = pos
-
-def get_cards(points_dict, getter):
-    # 扫描指令卡
-    color_num = [0, 0, 0]
-    cards = []
-    for i in range(0, 5):
-        region = points_dict['cards_region'][i]
-        card_pos = getter.GetPos(points_dict['cards_center'][i])
-        buster_pos = find_color(region, getter.GetPos(points_dict['buster_color']), 10)
-        art_pos = find_color(region, getter.GetPos(points_dict['arts_color']), 10)
-        quick_pos = find_color(region, getter.GetPos(points_dict['quick_color']), 10)
-        for j, now_pos in enumerate([buster_pos, art_pos, quick_pos]):
-            if now_pos:
-                card_color = j
-                color_num[card_color] += 1
-                break
-            if j == 2:
-                card_color = j
-                color_num[card_color] += 1
-        now_card = Card('', card_color, card_pos)
-        cards.append(now_card)
-    return cards, color_num
 
 def check_over(t, dict):
     s = time.time()
@@ -88,6 +63,36 @@ def FindOnScreen(img, th=0.7):
     if pos:
         if (pos['confidence'] > th):
             return pos['result']
+
+class Card:
+    def __init__(self, name, color, pos):
+        self.name = name
+        self.color = color
+        self.pos = pos
+
+
+def get_cards(points_dict):
+    # 扫描指令卡
+    color_num = [0, 0, 0]
+    cards = []
+    for i in range(0, 5):
+        region = points_dict['ordercards_region'][i*2] + points_dict['ordercards_region'][i*2 + 1]
+        region = [round(num) for num in region]
+        card_pos = points_dict['ordercards_center'][i]
+        buster_pos = find_color(region, buster_color, 5)
+        art_pos = find_color(region, arts_color, 5)
+        quick_pos = find_color(region, quick_color, 5)
+        for j, now_pos in enumerate([buster_pos, art_pos, quick_pos]):
+            if now_pos:
+                card_color = j
+                color_num[card_color] += 1
+                break
+            if j == 2:
+                card_color = j
+                color_num[card_color] += 1
+        now_card = Card('', card_color, card_pos)
+        cards.append(now_card)
+    return cards, color_num
 
 if __name__ == '__main__':
     while True:
