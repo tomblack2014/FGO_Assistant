@@ -55,24 +55,32 @@ if __name__ == '__main__':
             # TODO：增加阶职定向翻页查找功能
             find = 0
             freshTimes = 0
+            trackbar_start = pos_dict['trackbar_start']
+            trackbar_end = pos_dict['trackbar_end']
+            dist = (trackbar_end[1] - trackbar_start[1]) / 3
+            trackbar_pos = [[trackbar_start[0], trackbar_start[1] + dist * i] for i in range(0, 4)]
             while find == 0:
                 task_pos = None
-                if policy['task_type'] == 'cloth':
-                    task_pos = FindOnScreen('img/targetClothes.png')
-                    if task_pos:
-                        click_wait([task_pos[0], task_pos[1]], 2)
-                        find = 1
-                        break
-                else:
-                    task_pos = FindOnScreen('img/targetServant.png')
-                    if task_pos:
-                        click_wait([task_pos[0], task_pos[1]], 2)
-                        find = 1
-                        break
+                for i in range(0,4):
+                    click_wait(trackbar_pos[i], 1)
+                    if policy['task_type'] == 'cloth':
+                        task_pos = FindOnScreen('img/targetClothes.png')
+                        if task_pos:
+                            click_wait([task_pos[0], task_pos[1]], 2)
+                            find = 1
+                            break
+                    else:
+                        task_pos = FindOnScreen('img/targetServant.png')
+                        if task_pos:
+                            click_wait([task_pos[0], task_pos[1]], 2)
+                            find = 1
+                            break
                 if find == 0:
                     click_wait(pos_dict['update_list'], 1)
                     click_wait(pos_dict['update_yes'], 10)
                     freshTimes += 1
+                else:
+                    break
                 time.sleep(1)
             print("本次找礼装刷新{}次".format(freshTimes))
 
@@ -111,6 +119,8 @@ if __name__ == '__main__':
                         for skill in skill_lists:
                             if skill.startswith('wait'):
                                 time.sleep(5)
+                            elif skill.startswith('s_wait'):
+                                time.sleep(1)
                             else:
                                 if skill.startswith('skill'):
                                     click_wait(pos_dict[skill], 3)
