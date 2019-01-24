@@ -64,6 +64,21 @@ def FindOnScreen(img, th=0.7):
         if (pos['confidence'] > th):
             return pos['result']
 
+def FindOnRegion(screen, region, img, th=0.7):
+    imobj = ac.imread(img)
+    imsrc = screen[region[0]:region[2],region[1]:region[3]]
+    pos = ac.find_template(imsrc, imobj)
+    if pos:
+        if (pos['confidence'] > th):
+            return pos['result']
+
+def FindOnImg(srcImg, targetImg, th=0.7):
+    imobj = ac.imread(targetImg)
+    pos = ac.find_template(srcImg, imobj)
+    if pos:
+        if (pos['confidence'] > th):
+            return pos['result']
+
 class Card:
     def __init__(self, name, color, pos):
         self.name = name
@@ -93,6 +108,46 @@ def get_cards(points_dict):
         now_card = Card('', card_color, card_pos)
         cards.append(now_card)
     return cards, color_num
+
+#权值关系如下：
+#   b   a   q
+#w  7   3   2
+#-  5   1   0
+#r  3   -1  -2
+def get_card_value(region):
+    ret = 0
+    region = [round(num) for num in region]
+    screen = pg.screenshot()
+    screen.save("img/screen.png")
+    imsrc = ac.imread("img/screen.png")
+    imsrc = imsrc[region[1]:region[3],region[0]:region[2]]
+    result = FindOnImg(imsrc, 'img/buster.png')
+    if result:
+        ret = ret + 5
+    else:
+        result = FindOnImg(imsrc, 'img/arts.png')
+        if result:
+            ret = ret + 1
+
+    result = FindOnImg(imsrc, 'img/weak.png')
+    if result:
+        ret = ret + 2
+    else:
+        result = FindOnImg(imsrc, 'img/resist.png')
+        if result:
+            ret = ret - 2
+    return ret
+
+def rank_ordercards(points_dict):
+    #扫描指令卡
+    rankRes = []
+    for i in range(0, 5):
+        region = points_dict['ordercards_region'][i*2] + points_dict['ordercards_region'][i*2 + 1]
+        region = [round(num) for num in region]
+        val = get_card_value(region)
+        rankRes = rankRes + [[points_dict['ordercards_center'][i],val]]
+    rankRes = sorted(rankRes, key=lambda x:-x[1])
+    return rankRes
 
 if __name__ == '__main__':
     while True:

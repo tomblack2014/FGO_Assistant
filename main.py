@@ -52,7 +52,6 @@ if __name__ == '__main__':
                 click_wait(pos_dict['AP_ok_btn'], 3)
 
             # 找礼装
-            # TODO：增加阶职定向翻页查找功能
             find = 0
             freshTimes = 0
             trackbar_start = pos_dict['trackbar_start']
@@ -129,6 +128,7 @@ if __name__ == '__main__':
                             
 
                 click_wait(atk_btn, 2.5)
+                pg.moveTo(pos_dict['class_choose'][0]);
                 # 释放宝具
                 # TODO：配置文件
                 if t_str in turn_policy:
@@ -142,20 +142,24 @@ if __name__ == '__main__':
                 # TODO：有空这块逻辑可以好好优化改进一下，为了跑通暂时五张卡从左到右出
                 # for i in range(0, 5):
                 #     click_wait(pos_dict['ordercards_center'][i], 0.3)
-                cards, coler_num = get_cards(pos_dict)
-                click_num = []
-                print("选择指令卡")
-                # 优先垫红卡，之后顺序选
-                for i in range(0, 5):
-                    if cards[i].color == 0:
-                        click_num.append(i)
-                for i in range(0, 5):
-                    if cards[i].color != 0:
-                        click_num.append(i)
+                #cards, coler_num = get_cards(pos_dict)
+                #click_num = []
+                #print("选择指令卡")
+                ## 优先垫红卡，之后顺序选
+                #for i in range(0, 5):
+                #    if cards[i].color == 0:
+                #        click_num.append(i)
+                #for i in range(0, 5):
+                #    if cards[i].color != 0:
+                #        click_num.append(i)
                 # 点击指令卡，等动画
-                for i in click_num[: 5]:
-                    click_wait(cards[i].pos, 0.3)
-                cards.clear()
+                #for i in click_num[: 5]:
+                #    click_wait(cards[i].pos, 0.3)
+                #cards.clear()
+                rankRes = rank_ordercards(pos_dict)
+                print(rankRes)
+                for i in range(0, 5):
+                    click_wait(rankRes[i][0], 0.3)
                 time.sleep(15)
             # 结束结算页面
             PassTimes += 1
