@@ -45,11 +45,27 @@ if __name__ == '__main__':
                 time.sleep(1)
 
             # 判断是否需要嗑果子
-            # TODO:判断吃所有果子的逻辑
-            apple_pos = FindOnScreen('img/golden_apple.png')
-            if apple_pos:
-                click_wait(apple_pos, 1)
-                click_wait(pos_dict['AP_ok_btn'], 3)
+            if FindOnScreen('img/need_apple.png'):
+                succeed = 0
+                AP_supply = policy['AP_supply']
+                for i in range (AP_supply[0], AP_supply[1] + 1):
+                    if i == 1:
+                        imgName = 'img/golden_apple.png'
+                    elif i == 2:
+                        imgName = 'img/silver_apple.png'
+                    else:
+                        click_wait(pos_dict['AP_trackbar'], 1)
+                        imgName = 'img/copper_apple.png'
+            
+                    apple_pos = FindOnScreen(imgName)
+                    if apple_pos:
+                        click_wait(apple_pos, 1)
+                        click_wait(pos_dict['AP_ok_btn'], 3)
+                        succeed = 1
+                        break
+                if succeed == 0:
+                    print("苹果吃完了,溜了溜了")
+                    break
 
             # 找礼装
             find = 0
@@ -89,17 +105,26 @@ if __name__ == '__main__':
             # 一直打到结束
             turn = 0
             over = 0
+            failed = 0
 
             while True:
                 atk_btn = 0
                 # 等到加载完成，出现attack_btn或者result
                 while True:
+                    failed = FindOnScreen('img/failed.png')
+                    if failed:
+                        click_wait(pos_dict['give_up'], 1)
+                        click_wait(pos_dict['give_up_ok'], 1)
+                        click_wait(pos_dict['give_up_close'], 1)
+                        print("翻车")
+                        over = 1
+                        failed = 1
+                        break;
                     atk_btn = FindOnScreen('img/atk_btn.png')
                     if atk_btn:
                         break
                     result = FindOnScreen('img/result.png')
                     if result:
-                        print("result")
                         over = 1
                         break
                     time.sleep(1)
@@ -108,7 +133,6 @@ if __name__ == '__main__':
                 turn += 1
 
                 # 不同回合的技能开启
-                # TODO:用配置文件控制
                 print("回合{}:释放技能".format(turn))
                 t_str = "turn_" + str(turn)
                 turn_policy = policy['policy']
@@ -130,7 +154,6 @@ if __name__ == '__main__':
                 click_wait(atk_btn, 2.5)
                 pg.moveTo(pos_dict['class_choose'][0]);
                 # 释放宝具
-                # TODO：配置文件
                 if t_str in turn_policy:
                     if "weapon" in turn_policy[t_str]:
                         weapon_list = turn_policy[t_str]['weapon']
@@ -138,33 +161,16 @@ if __name__ == '__main__':
                             weapon_pos = "baoju" + str(weapon)
                             click_wait(pos_dict[weapon_pos], 0.3)
 
-                # 扫描卡牌，计算各色数量
-                # TODO：有空这块逻辑可以好好优化改进一下，为了跑通暂时五张卡从左到右出
-                # for i in range(0, 5):
-                #     click_wait(pos_dict['ordercards_center'][i], 0.3)
-                #cards, coler_num = get_cards(pos_dict)
-                #click_num = []
-                #print("选择指令卡")
-                ## 优先垫红卡，之后顺序选
-                #for i in range(0, 5):
-                #    if cards[i].color == 0:
-                #        click_num.append(i)
-                #for i in range(0, 5):
-                #    if cards[i].color != 0:
-                #        click_num.append(i)
-                # 点击指令卡，等动画
-                #for i in click_num[: 5]:
-                #    click_wait(cards[i].pos, 0.3)
-                #cards.clear()
+                # 扫描卡牌，根据不同色卡进行rank
                 rankRes = rank_ordercards(pos_dict)
-                print(rankRes)
                 for i in range(0, 5):
                     click_wait(rankRes[i][0], 0.3)
                 time.sleep(15)
             # 结束结算页面
-            PassTimes += 1
-            print("通关,当前第{}次".format(PassTimes))
-            click_wait(pos_dict['class_choose'][0], 2)
-            click_wait(pos_dict['class_choose'][0], 2)
-            click_wait(pos_dict['class_choose'][0], 2)
-            click_wait(pos_dict['next_btn'], 1)
+            if failed == 0:
+                PassTimes += 1
+                print("通关,当前第{}次".format(PassTimes))
+                click_wait(pos_dict['class_choose'][0], 2)
+                click_wait(pos_dict['class_choose'][0], 2)
+                click_wait(pos_dict['class_choose'][0], 2)
+                click_wait(pos_dict['next_btn'], 1)
