@@ -121,7 +121,7 @@ def get_card_value(region):
     screen.save("img/screen.png")
     imsrc = ac.imread("img/screen.png")
     imsrc = imsrc[region[1]:region[3],region[0]:region[2]]
-    result = FindOnImg(imsrc, 'img/buster.png')
+    result = FindOnImg(imsrc, 'img/buster.png', 0.6)
     if result:
         ret = ret + 5
     else:
@@ -129,7 +129,7 @@ def get_card_value(region):
         if result:
             ret = ret + 1
 
-    result = FindOnImg(imsrc, 'img/weak.png')
+    result = FindOnImg(imsrc, 'img/weak.png', 0.6)
     if result:
         ret = ret + 2
     else:

@@ -167,4 +167,5 @@ if __name__ == '__main__':
             click_wait(pos_dict['class_choose'][0], 2)
             click_wait(pos_dict['class_choose'][0], 2)
             click_wait(pos_dict['class_choose'][0], 2)
+            click_wait(pos_dict['class_choose'][0], 2)
             click_wait(pos_dict['next_btn'], 1)
