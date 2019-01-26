@@ -57,7 +57,7 @@ if __name__ == '__main__':
                         click_wait(pos_dict['AP_trackbar'], 1)
                         imgName = 'img/copper_apple.png'
             
-                    apple_pos = FindOnScreen(imgName)
+                    apple_pos = FindOnScreen(imgName,0.9999)
                     if apple_pos:
                         click_wait(apple_pos, 1)
                         click_wait(pos_dict['AP_ok_btn'], 3)
@@ -111,8 +111,8 @@ if __name__ == '__main__':
                 atk_btn = 0
                 # 等到加载完成，出现attack_btn或者result
                 while True:
-                    failed = FindOnScreen('img/failed.png')
-                    if failed:
+                    failedImg = FindOnScreen('img/failed.png')
+                    if failedImg:
                         click_wait(pos_dict['give_up'], 1)
                         click_wait(pos_dict['give_up_ok'], 1)
                         click_wait(pos_dict['give_up_close'], 1)
