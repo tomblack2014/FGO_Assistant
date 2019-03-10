@@ -16,12 +16,14 @@ if __name__ == '__main__':
         points_dict = json.load(open("points.json", 'r', encoding='utf-8'))
         times = 1
         while True:
-            while True:
-                click_wait(points_dict['call_ten'],0.5)
+            reset_pos = FindOnScreen('img/reset_bonus.png', 0.9)
+            if reset_pos:
+                click_wait(reset_pos, 1)
                 times += 1
+                click_wait([1149, 749], 3)
+                click_wait([933, 751], 1)
+
                 if times > 108:
                     break
-            click_wait(points_dict['back_call'],1)
-            click_wait([1644,1011],8)
-            click_wait([1271,1025],1)
-            times = 1
+            for _ in range(10):
+                click_wait([694, 616], 0.5)
